@@ -45,7 +45,7 @@ bool cISSerialPort::Open(const std::string& portName, int baudRate, int timeout,
 {
 	m_timeout = timeout;
 	m_blocking = blocking;
-    return (serialPortOpen(&m_serial, portName.c_str(), baudRate, (int)m_blocking) != 0);
+    return (serialPortOpen(&m_serial, portName.c_str(), baudRate, (int)m_blocking, 1) != 0);
 }
 
 int cISSerialPort::Close()

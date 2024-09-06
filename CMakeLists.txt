@@ -10,7 +10,7 @@ file(GLOB SOURCES_SDK
     "src/protocol/*.h"
     "src/util/*.cpp"
     "src/util/*.h"
-	"hw-libs/bootloader/bootloaderShared.c"
+	#"hw-libs/bootloader/bootloaderShared.c"
     "tests/runtime/*.cpp"
     "tests/runtime/*.h"
 	"src/yaml-cpp/*.cpp"
@@ -20,6 +20,18 @@ file(GLOB SOURCES_SDK
 	"src/yaml-cpp/node/*.cpp"
 	"src/yaml-cpp/node/*.h"
 )
+
+# Exclude bootloader-related files and other unwanted files
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloader.*\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*cltool_main\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*bootloaderShared\\.c$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloaderThread\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloaderAPP\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloaderISB\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloaderDFU\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloaderSAMBA\\.cpp$")
+list(FILTER SOURCES_SDK EXCLUDE REGEX ".*ISBootloaderBase\\.cpp$")
+
 
 # Compile libusb from source
 if(WIN32)

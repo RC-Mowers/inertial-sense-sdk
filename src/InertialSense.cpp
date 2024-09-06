@@ -1440,7 +1440,7 @@ bool InertialSense::OpenSerialPorts(const char* port, int baudRate)
     {
         serial_port_t serial;
         serialPortPlatformInit(&serial);
-        if (serialPortOpen(&serial, ports[i].c_str(), baudRate, 0) == 0)
+        if (serialPortOpen(&serial, ports[i].c_str(), baudRate, 0, 1) == 0)
         {
             // failed to open
             serialPortClose(&serial);

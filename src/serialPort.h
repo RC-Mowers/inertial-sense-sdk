@@ -48,7 +48,7 @@ extern int SERIAL_PORT_DEFAULT_TIMEOUT;
 
 typedef struct serial_port_t serial_port_t;
 
-typedef int(*pfnSerialPortOpen)(serial_port_t* serialPort, const char* port, int baudRate, int blocking);
+typedef int(*pfnSerialPortOpen)(serial_port_t* serialPort, const char* port, int baudRate, int blocking, int hw_flow_control);
 typedef int(*pfnSerialPortIsOpen)(serial_port_t* serialPort);
 typedef int(*pfnSerialPortRead)(serial_port_t* serialPort, unsigned char* buf, int len, int timeoutMilliseconds);
 typedef void(*pfnSerialPortAsyncReadCompletion)(serial_port_t* serialPort, unsigned char* buf, int len, int errorCode);
@@ -115,7 +115,7 @@ void serialPortSetPort(serial_port_t* serialPort, const char* port);
 // uses such as a boot loader where a write would then require n bytes to be read in a single operation.
 // blocking simply determines the default timeout value of the serialPortRead function
 // returns 1 if success, 0 if failure
-int serialPortOpen(serial_port_t* serialPort, const char* port, int baudRate, int blocking);
+int serialPortOpen(serial_port_t* serialPort, const char* port, int baudRate, int blocking, int hw_flow_control);
 
 // open a serial port with retry
 // port is null terminated, i.e. COM1\0, COM2\0, etc.
@@ -123,7 +123,7 @@ int serialPortOpen(serial_port_t* serialPort, const char* port, int baudRate, in
 // uses such as a boot loader where a write would then require n bytes to be read in a single operation.
 // blocking simply determines the default timeout value of the serialPortRead function
 // returns 1 if success, 0 if failure
-int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRate, int blocking);
+int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRate, int blocking, int hw_flow_control);
 
 // check if the port is open
 // returns 1 if open, 0 if not open

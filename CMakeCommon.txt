@@ -62,13 +62,24 @@ file(GLOB SOURCES_SDK
 	"${CMAKE_CURRENT_LIST_DIR}/src/*.c"
 	"${CMAKE_CURRENT_LIST_DIR}/src/*.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/src/*.h"
-	"${CMAKE_CURRENT_LIST_DIR}/hw-libs/bootloader/bootloaderShared.c"
 	"${CMAKE_CURRENT_LIST_DIR}/src/yaml-cpp/*.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/src/yaml-cpp/*.h"
 	"${CMAKE_CURRENT_LIST_DIR}/src/yaml-cpp/contrib/*.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/src/yaml-cpp/contrib/*.h"
 	"${CMAKE_CURRENT_LIST_DIR}/src/yaml-cpp/node/*.cpp"
 	"${CMAKE_CURRENT_LIST_DIR}/src/yaml-cpp/node/*.h"
+)
+
+# Exclude certain files (e.g., files named "exclude_this_file.cpp")
+list(REMOVE_ITEM SOURCES_SDK
+	"${CMAKE_CURRENT_LIST_DIR}/src/ISBootloaderBase.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/src/ISBootloaderThread.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/src/ISBootloaderAPP.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/src/ISBootloaderISB.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/src/ISBootloaderDFU.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/src/ISBootloaderSAMBA.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/hw-libs/bootloader/bootloaderShared.c"
+	"${CMAKE_CURRENT_LIST_DIR}/src/cltool_main.cpp"
 )
 
 # Compile libusb from source

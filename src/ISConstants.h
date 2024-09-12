@@ -162,7 +162,7 @@ extern void vPortFree(void* pv);
 #endif
 
 #ifndef STRNCPY
-#define STRNCPY(dst, src, maxlen) strncpy_s(dst, maxlen, src, maxlen);
+#define STRNCPY(a, b, c) strncpy_s(a, c, b, c);
 #endif
 
 #define strncasecmp _strnicmp 
@@ -178,7 +178,7 @@ extern void vPortFree(void* pv);
 #endif
 
 #ifndef STRNCPY
-#define STRNCPY(dst, src, maxlen) strncpy((char*)dst, (char*)src, maxlen)
+#define STRNCPY(a, b, c) strncpy((char*)a, (char*)b, c)
 #endif
 
 #endif // defined(_MSC_VER)

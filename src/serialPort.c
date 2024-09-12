@@ -34,7 +34,7 @@ int serialPortOpen(serial_port_t* serialPort, const char* port, int baudRate, in
     return serialPort->pfnOpen(serialPort, port, baudRate, blocking, hw_flow_control);
 }
 
-int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRate, int blocking, int hw_flow_control)
+int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRate, int blocking)
 {
     if (serialPort == 0 || port == 0 || serialPort->pfnOpen == 0)
     {
@@ -44,7 +44,7 @@ int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRat
     serialPortClose(serialPort);
     for (int retry = 0; retry < 30; retry++)
     {
-        if (serialPortOpen(serialPort, port, baudRate, blocking, hw_flow_control))
+        if (serialPortOpen(serialPort, port, baudRate, blocking, 1))
         {
             return 1;
         }
@@ -95,10 +95,10 @@ int serialPortReadTimeout(serial_port_t* serialPort, unsigned char* buffer, int 
 
 	int count = serialPort->pfnRead(serialPort, buffer, readCount, timeoutMilliseconds);
 
-	if (count < 0)
+	/*if (count < 0)
 	{
 		return 0;
-	}
+	}*/
 
 	return count;
 }

@@ -922,7 +922,7 @@ typedef struct PACKED
 	gps_sat_sv_t			sat[MAX_NUM_SAT_CHANNELS];	
 } gps_sat_t;
 
-#define GPS_VER_NUM_EXTENSIONS	6
+
 /** (DID_GPS1_VERSION) GPS version strings */
 typedef struct PACKED
 {
@@ -931,7 +931,9 @@ typedef struct PACKED
     /** Hardware version */
 	uint8_t                 hwVersion[10];		
     /** Extension */
-	uint8_t                 extension[GPS_VER_NUM_EXTENSIONS][30];		
+	uint8_t                 extension[30];		
+    /** ensure 32 bit aligned in memory */
+	uint8_t					reserved[2];		
 } gps_version_t;
 
 // (DID_INL2_STATES) INL2 - INS Extended Kalman Filter (EKF) states
@@ -1135,7 +1137,7 @@ typedef struct PACKED
 	double					sensorTruePeriod;
 
 	/** Reserved */
-	uint32_t				flashCfgChecksum;
+	float					reserved2;
 	/** Reserved */
 	float					reserved3;
 
@@ -1202,29 +1204,28 @@ typedef struct PACKED
 
 enum eSystemCommand 
 {
-    SYS_CMD_NONE                                    = 0,            // (uint32 inv: 4294967295)
-    SYS_CMD_SAVE_PERSISTENT_MESSAGES                = 1,            // (uint32 inv: 4294967294)
-    SYS_CMD_ENABLE_BOOTLOADER_AND_RESET             = 2,            // (uint32 inv: 4294967293)
-    SYS_CMD_ENABLE_SENSOR_STATS                     = 3,            // (uint32 inv: 4294967292)
-    SYS_CMD_ENABLE_RTOS_STATS                       = 4,            // (uint32 inv: 4294967291)
-    SYS_CMD_ZERO_MOTION                             = 5,            // (uint32 inv: 4294967290)
-    SYS_CMD_REF_POINT_STATIONARY                    = 6,            // (uint32 inv: 4294967289)
-    SYS_CMD_REF_POINT_MOVING                        = 7,            // (uint32 inv: 4294967288)
+    SYS_CMD_SAVE_PERSISTENT_MESSAGES                = 1,
+    SYS_CMD_ENABLE_BOOTLOADER_AND_RESET             = 2,
+    SYS_CMD_ENABLE_SENSOR_STATS                     = 3,
+    SYS_CMD_ENABLE_RTOS_STATS                       = 4,
+    SYS_CMD_ZERO_MOTION                             = 5,
+    SYS_CMD_REF_POINT_STATIONARY                    = 6,
+    SYS_CMD_REF_POINT_MOVING                        = 7,
 
-    SYS_CMD_ENABLE_GPS_LOW_LEVEL_CONFIG             = 10,           // (uint32 inv: 4294967285)
-    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_GPS1   = 11,           // (uint32 inv: 4294967284)
-    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_GPS2   = 12,           // (uint32 inv: 4294967283)
-    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_SER0   = 13,           // (uint32 inv: 4294967282)
-    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_SER1   = 14,           // (uint32 inv: 4294967281)
-    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_SER2   = 15,           // (uint32 inv: 4294967280)
+    SYS_CMD_ENABLE_GPS_LOW_LEVEL_CONFIG             = 10,
+    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_GPS1   = 11,
+    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_GPS2   = 12,
+    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_SER0   = 13,
+    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_SER1   = 14,
+    SYS_CMD_ENABLE_SERIAL_PORT_BRIDGE_USB_TO_SER2   = 15,
 
-    SYS_CMD_SAVE_FLASH                              = 97,           // (uint32 inv: 4294967198)
-    SYS_CMD_SAVE_GPS_ASSIST_TO_FLASH_RESET          = 98,           // (uint32 inv: 4294967197)
-    SYS_CMD_SOFTWARE_RESET                          = 99,           // (uint32 inv: 4294967196)
-    SYS_CMD_MANF_UNLOCK                             = 1122334455,   // (uint32 inv: 3172632840) 
-    SYS_CMD_MANF_FACTORY_RESET                      = 1357924680,   // (uint32 inv: 2937042615) SYS_CMD_MANF_RESET_UNLOCK must be sent prior to this command.
-    SYS_CMD_MANF_CHIP_ERASE                         = 1357924681,   // (uint32 inv: 2937042614) SYS_CMD_MANF_RESET_UNLOCK must be sent prior to this command.
-    SYS_CMD_MANF_DOWNGRADE_CALIBRATION              = 1357924682,   // (uint32 inv: 2937042613) SYS_CMD_MANF_RESET_UNLOCK must be sent prior to this command.
+    SYS_CMD_SAVE_FLASH                              = 97,
+    SYS_CMD_SAVE_GPS_ASSIST_TO_FLASH_RESET          = 98,
+    SYS_CMD_SOFTWARE_RESET                          = 99,
+    SYS_CMD_MANF_UNLOCK                             = 1122334455,
+    SYS_CMD_MANF_FACTORY_RESET                      = 1357924680,	// SYS_CMD_MANF_RESET_UNLOCK must be sent prior to this command.
+    SYS_CMD_MANF_CHIP_ERASE                         = 1357924681,	// SYS_CMD_MANF_RESET_UNLOCK must be sent prior to this command.
+    SYS_CMD_MANF_DOWNGRADE_CALIBRATION              = 1357924682,	// SYS_CMD_MANF_RESET_UNLOCK must be sent prior to this command.
 };
 
 enum eSerialPortBridge
@@ -1261,20 +1262,20 @@ typedef struct PACKED
 	/** Broadcast period multiple - ASCII Raw IMU data (up to 1KHz).  Use this IMU data for output data rates faster than DID_FLASH_CONFIG.startupNavDtMs.  Otherwise we recommend use of pimu or ppimu as they are oversampled and contain less noise. 0 to disable. */
 	uint16_t				primu;
 
-	/** Broadcast period multiple - ASCII NMEA GGA GNSS 3D location, fix, and accuracy. 0 to disable. */
-	uint16_t				gga;
+	/** Broadcast period multiple - ASCII NMEA GPGGA GPS 3D location, fix, and accuracy. 0 to disable. */
+	uint16_t				gpgga;
 
-	/** Broadcast period multiple - ASCII NMEA GLL GNSS 2D location and time. 0 to disable. */
-	uint16_t				gll;
+	/** Broadcast period multiple - ASCII NMEA GPGLL GPS 2D location and time. 0 to disable. */
+	uint16_t				gpgll;
 
-	/** Broadcast period multiple - ASCII NMEA GSA GNSS DOP and active satellites. 0 to disable. */
-	uint16_t				gsa;
+	/** Broadcast period multiple - ASCII NMEA GSA GPS DOP and active satellites. 0 to disable. */
+	uint16_t				gpgsa;
 
 	/** Broadcast period multiple - ASCII NMEA recommended minimum specific GPS/Transit data. 0 to disable. */
-	uint16_t				rmc;
+	uint16_t				gprmc;
 	
 	/** Broadcast period multiple - ASCII NMEA Data and Time. 0 to disable. */
-	uint16_t				zda;
+	uint16_t				gpzda;
 
 	/** Broadcast period multiple - ASCII NMEA Inertial Attitude Data. 0 to disable. */
 	uint16_t				pashr;
@@ -1516,7 +1517,7 @@ typedef struct PACKED
     /** Options to select alternate ports to output data, etc.  (see RMC_OPTIONS_...) */
     uint32_t				options;
     
-    /** Used for both the DID binary and ASCII NMEA messages.  */
+    /**  */
     uint8_t                 periodMultiple[DID_COUNT_UINS];
 
     /** ASCII NMEA data stream enable bits for the specified ports.  (see ASCII_RMC_BITS_...) */
@@ -2298,7 +2299,7 @@ enum ePlatformConfig
 	PLATFORM_CFG_TYPE_RUG3_G1                   = (int)9,       // "
 	PLATFORM_CFG_TYPE_RUG3_G2                   = (int)10,      // "
 	PLATFORM_CFG_TYPE_EVB2_G2                   = (int)11,
-	PLATFORM_CFG_TYPE_RESERVED1                 = (int)12,
+	PLATFORM_CFG_TYPE_EVB3                      = (int)12,
 	PLATFORM_CFG_TYPE_IG1_0_G2                  = (int)13,      // PCB IG-1.0.  GPS1 timepulse on G8
 	PLATFORM_CFG_TYPE_IG1_G1                    = (int)14,      // PCB IG-1.1 and later.  GPS1 timepulse on GPS1_PPS TIMESYNC (pin 20)
 	PLATFORM_CFG_TYPE_IG1_G2                    = (int)15,

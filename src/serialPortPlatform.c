@@ -262,7 +262,7 @@ static int set_interface_attribs(int fd, int speed, int parity)
 
 #endif
 
-static int serialPortOpenPlatform(serial_port_t* serialPort, const char* port, int baudRate, int blocking)
+static int serialPortOpenPlatform(serial_port_t* serialPort, const char* port, int baudRate, int blocking, int hw_flow_control)
 {
     if (serialPort->handle != 0)
     {
@@ -302,8 +302,16 @@ static int serialPortOpenPlatform(serial_port_t* serialPort, const char* port, i
         serialParams.fAbortOnError = 0;
         serialParams.fNull = 0;
         serialParams.fErrorChar = 0;
-        serialParams.fDtrControl = DTR_CONTROL_ENABLE;
-        serialParams.fRtsControl = RTS_CONTROL_ENABLE;
+        if (hw_flow_control)
+        {
+            serialParams.fDtrControl = DTR_CONTROL_ENABLE;
+            serialParams.fRtsControl = RTS_CONTROL_ENABLE;
+        }
+        else
+        {
+            serialParams.fDtrControl = DTR_CONTROL_DISABLE;
+            serialParams.fRtsControl = RTS_CONTROL_DISABLE;
+        }
         if (!SetCommState(platformHandle, &serialParams))
         {
             serialPortClose(serialPort);
@@ -394,7 +402,11 @@ static int serialPortClosePlatform(serial_port_t* serialPort)
         CloseHandle(handle->ovRead.hEvent);
         CloseHandle(handle->ovWrite.hEvent);
     }
-    CloseHandle(handle->platformHandle);
+    BOOL success = CloseHandle(handle->platformHandle);
+    if (success == 0)
+    {
+        printf("Failed to close handle");
+    }
     handle->platformHandle = 0;
 
 #else
@@ -482,6 +494,10 @@ static int serialPortReadTimeoutPlatformWindows(serialPortHandle* handle, unsign
             else
             {
                 CancelIo(handle->platformHandle);
+                if (dwRes == ERROR_BAD_COMMAND)
+                {
+                    return -1;// we had a bad read since the port probably closed
+                }
             }
         }
 
@@ -490,7 +506,7 @@ static int serialPortReadTimeoutPlatformWindows(serialPortHandle* handle, unsign
             Sleep(1);
         }
     }
-    while (totalRead < readCount && GetTickCount64() - startTime < timeoutMilliseconds);
+    while (totalRead <= 0 && GetTickCount64() - startTime < timeoutMilliseconds);
     return totalRead;
 }
 

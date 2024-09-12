@@ -254,16 +254,27 @@ static bool cltool_setupCommunications(InertialSense& inertialSenseInterface)
         sysCommand = SYS_CMD_MANF_CHIP_ERASE;
         inertialSenseInterface.SendRawData(DID_EVB_STATUS, (uint8_t*)&sysCommand, sizeof(uint32_t), offsetof(evb_status_t, sysCommand));
     }
-    if (g_commandLineOptions.sysCommand != 0)
-    {   // Send system command to IMX
-		cout << "Sending system command: " << g_commandLineOptions.sysCommand << endl;
+    if (g_commandLineOptions.chipEraseUins)
+    {   // Chip erase uINS
 		system_command_t cfg;
 
 		cfg.command = SYS_CMD_MANF_UNLOCK;
 		cfg.invCommand = ~cfg.command;
 		inertialSenseInterface.SendRawData(DID_SYS_CMD, (uint8_t*)&cfg, sizeof(system_command_t), 0);
 
-		cfg.command = g_commandLineOptions.sysCommand;
+		cfg.command = SYS_CMD_MANF_CHIP_ERASE;
+		cfg.invCommand = ~cfg.command;
+		inertialSenseInterface.SendRawData(DID_SYS_CMD, (uint8_t*)&cfg, sizeof(system_command_t), 0);
+    }
+    if (g_commandLineOptions.factoryResetUins)
+    {   // Reset flash config defaults on uINS
+		system_command_t cfg;
+
+		cfg.command = SYS_CMD_MANF_UNLOCK;
+		cfg.invCommand = ~cfg.command;
+		inertialSenseInterface.SendRawData(DID_SYS_CMD, (uint8_t*)&cfg, sizeof(system_command_t), 0);
+
+		cfg.command = SYS_CMD_MANF_FACTORY_RESET;
 		cfg.invCommand = ~cfg.command;
 		inertialSenseInterface.SendRawData(DID_SYS_CMD, (uint8_t*)&cfg, sizeof(system_command_t), 0);
     }
@@ -548,7 +559,7 @@ static int inertialSenseMain()
 	{
 		serial_port_t serialForAscii;
 		serialPortPlatformInit(&serialForAscii);
-		serialPortOpen(&serialForAscii, g_commandLineOptions.comPort.c_str(), g_commandLineOptions.baudRate, 0);
+		serialPortOpen(&serialForAscii, g_commandLineOptions.comPort.c_str(), g_commandLineOptions.baudRate, 0, 1);
 		serialPortWriteAscii(&serialForAscii, "STPB", 4);
 		serialPortWriteAscii(&serialForAscii, ("ASCB," + g_commandLineOptions.asciiMessages).c_str(), (int)(5 + g_commandLineOptions.asciiMessages.size()));
 		unsigned char line[512];

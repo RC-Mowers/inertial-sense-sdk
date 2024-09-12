@@ -123,7 +123,7 @@ int serialPortOpen(serial_port_t* serialPort, const char* port, int baudRate, in
 // uses such as a boot loader where a write would then require n bytes to be read in a single operation.
 // blocking simply determines the default timeout value of the serialPortRead function
 // returns 1 if success, 0 if failure
-int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRate, int blocking, int hw_flow_control);
+int serialPortOpenRetry(serial_port_t* serialPort, const char* port, int baudRate, int blocking);
 
 // check if the port is open
 // returns 1 if open, 0 if not open

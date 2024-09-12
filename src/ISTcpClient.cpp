@@ -12,6 +12,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "ISConstants.h"
 
+#pragma comment(lib, "ws2_32")
+
 #if PLATFORM_IS_LINUX || PLATFORM_IS_APPLE
 
 /* Assume that any non-Windows platform uses POSIX-style sockets instead. */
@@ -135,14 +137,14 @@ int ISSocketRead(socket_t socket, uint8_t* data, int dataLength)
 		{
 			return 0;
 		}
-
+		return -err;
 #else
 
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
 		{
 			return 0;
 		}
-
+		return -errno;
 #endif
 
 	}

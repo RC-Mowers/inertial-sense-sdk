@@ -76,7 +76,6 @@ cISStream* cISClient::OpenConnectionToServer(const string& connectionString, boo
 
 	return NULLPTR;
 }
-
 cISStream* cISClient::OpenConnectionToServer2(const string& connectionString, bool* enableGpggaForwarding)
 {
 	vector<string> pieces;
@@ -85,13 +84,17 @@ cISStream* cISClient::OpenConnectionToServer2(const string& connectionString, bo
 	{
 		return NULLPTR;
 	}
+
 	string type = pieces[0];	// TCP, SERIAL
 	string protocol = pieces[1];	// RTCM3, UBLOX, IS
+
 	if (type == "SERIAL")
 	{
 		cISSerialPort* clientStream = new cISSerialPort();
+
 		string portName = pieces[2];	// /dev/ttyACM0
 		string baudrate = pieces[3];	// 921600
+
 		if (clientStream->Open(portName, atoi(baudrate.c_str())))
 		{
 			return clientStream;
@@ -100,15 +103,18 @@ cISStream* cISClient::OpenConnectionToServer2(const string& connectionString, bo
 	else if (type == "TCP" || type == "NTRIP")
 	{
 		cISTcpClient* clientStream = new cISTcpClient();
+
 		string host = (pieces[2].size() > 0 ? pieces[2] : "127.0.0.1");	// ipAddr/URL
 		string port = (pieces[3]);
 		string subUrl = (pieces.size() > 4 ? pieces[4] : "");
 		string username = (pieces.size() > 5 ? pieces[5] : "");
 		string password = (pieces.size() > 6 ? pieces[6] : "");
+
 		if (clientStream->Open(host, atoi(port.c_str()), 2000) != 0)
 		{
 			return NULLPTR;
 		}
+
 		if (subUrl.size() != 0)
 		{	// Connect NTRIP if specified - https://igs.bkg.bund.de/root_ftp/NTRIP/documentation/NtripDocumentation.pdf
 			string userAgent = "NTRIP Inertial Sense";			// NTRIP standard requires "NTRIP" to be at the start of the User-Agent string.
@@ -118,7 +124,11 @@ cISStream* cISClient::OpenConnectionToServer2(const string& connectionString, bo
 				*enableGpggaForwarding = true;
 			}
 		}
+
 		return clientStream;
 	}
+
 	return NULLPTR;
 }
+
+

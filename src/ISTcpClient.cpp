@@ -135,14 +135,14 @@ int ISSocketRead(socket_t socket, uint8_t* data, int dataLength)
 		{
 			return 0;
 		}
-
+		return -err;
 #else
 
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
 		{
 			return 0;
 		}
-
+		return -errno;
 #endif
 
 	}
@@ -339,6 +339,23 @@ void cISTcpClient::HttpGet(const string& subUrl, const string& userAgent, const 
 		msg += "Authorization: Basic " + base64Encode((const unsigned char*)auth.data(), (int)auth.size()) + "\r\n";
 	}
 	msg += "Accept: */*\r\nConnection: close\r\n\r\n";
+	Write((uint8_t*)msg.data(), (int)msg.size());
+}
+
+void cISTcpClient::HttpGet2(const string& subUrl, const string& userAgent, const string& userName, const string& password, const string& host, const string& port)
+{
+	string msg = "GET /" + subUrl + " HTTP/1.1\r\n";
+	msg += "Host: " + host + ":" + port + "\r\n";
+	msg += "Ntrip-Version: Ntrip/2.0\r\n";
+	msg += "User-Agent: " + userAgent + "\r\n";
+	msg += "Accept: */*\r\n";
+	msg += "Connection: close\r\n";
+	if (userName.size() != 0 && password.size() != 0)
+	{
+		string auth = userName + ":" + password;
+		msg += "Authorization: Basic " + base64Encode((const unsigned char*)auth.data(), (int)auth.size()) + "\r\n";
+	}
+	msg += "\r\n";
 	Write((uint8_t*)msg.data(), (int)msg.size());
 }
 

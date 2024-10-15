@@ -344,6 +344,23 @@ void cISTcpClient::HttpGet(const string& subUrl, const string& userAgent, const 
 	Write((uint8_t*)msg.data(), (int)msg.size());
 }
 
+void cISTcpClient::HttpGet2(const string& subUrl, const string& userAgent, const string& userName, const string& password, const string& host, const string& port)
+{
+	string msg = "GET /" + subUrl + " HTTP/1.1\r\n";
+	msg += "Host: " + host + ":" + port + "\r\n";
+	msg += "Ntrip-Version: Ntrip/2.0\r\n";
+	msg += "User-Agent: " + userAgent + "\r\n";
+	msg += "Accept: */*\r\n";
+	msg += "Connection: close\r\n";
+	if (userName.size() != 0 && password.size() != 0)
+	{
+		string auth = userName + ":" + password;
+		msg += "Authorization: Basic " + base64Encode((const unsigned char*)auth.data(), (int)auth.size()) + "\r\n";
+	}
+	msg += "\r\n";
+	Write((uint8_t*)msg.data(), (int)msg.size());
+}
+
 int cISTcpClient::SetBlocking(bool blocking)
 {
 	m_blocking = blocking;

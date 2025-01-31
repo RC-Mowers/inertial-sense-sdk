@@ -131,4 +131,65 @@ cISStream* cISClient::OpenConnectionToServer2(const string& connectionString, bo
 	return NULLPTR;
 }
 
+cISStream* cISClient::OpenConnectionToServer3(const string& connectionString, const string& bearer, bool* enableGpggaForwarding)
+{
+	vector<string> pieces;
+	splitString(connectionString, ':', pieces);
+	if (pieces.size() < 4) 
+	{
+		return NULLPTR;
+	}
+
+	string type = pieces[0];       // TCP, SERIAL
+	string protocol = pieces[1];   // RTCM3, UBLOX, IS
+
+	if (type == "SERIAL") {
+		cISSerialPort* clientStream = new cISSerialPort();
+
+		string portName = pieces[2];   // /dev/ttyACM0
+		string baudrate = pieces[3];   // 921600
+
+		if (clientStream->Open(portName, atoi(baudrate.c_str()))) {
+			return clientStream;
+		}
+	}
+	else if (type == "TCP" || type == "NTRIP") 
+	{
+		cISTcpClient* clientStream = new cISTcpClient();
+
+		string host = (pieces[2].size() > 0 ? pieces[2] : "127.0.0.1"); // ipAddr/URL
+		string port = (pieces[3]);
+		string subUrl = (pieces.size() > 4 ? pieces[4] : "");
+		string username = (pieces.size() > 5 ? pieces[5] : "");
+		string password = (pieces.size() > 6 ? pieces[6] : "");
+
+		if (clientStream->Open(host, atoi(port.c_str()), 2000) != 0) 
+		{
+			return NULLPTR;
+		}
+
+		if (subUrl.size() != 0) { // Connect NTRIP if specified
+			string userAgent = "NTRIP Inertial Sense"; // NTRIP standard requires "NTRIP" in User-Agent.
+
+			if (!bearer.empty()) {
+				// Use Bearer token for authorization
+				printf("Using Bearer token for NTRIP connection...\n");
+				clientStream->HttpGet3(subUrl, userAgent, username, password, host, port, bearer);
+			}
+			else {
+				printf("Error: Bearer token not provided for NTRIP connection.\n");
+				return NULLPTR; // Return null if no Bearer token is provided
+			}
+
+			if (enableGpggaForwarding != NULL) {
+				*enableGpggaForwarding = true;
+			}
+		}
+
+		return clientStream;
+	}
+
+	return NULLPTR;
+}
+
 

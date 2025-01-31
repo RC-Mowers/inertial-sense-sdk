@@ -12,6 +12,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "ISConstants.h"
 
+#pragma comment(lib, "ws2_32")
+
 #if PLATFORM_IS_LINUX || PLATFORM_IS_APPLE
 
 /* Assume that any non-Windows platform uses POSIX-style sockets instead. */
@@ -356,6 +358,31 @@ void cISTcpClient::HttpGet2(const string& subUrl, const string& userAgent, const
 		msg += "Authorization: Basic " + base64Encode((const unsigned char*)auth.data(), (int)auth.size()) + "\r\n";
 	}
 	msg += "\r\n";
+	Write((uint8_t*)msg.data(), (int)msg.size());
+}
+
+void cISTcpClient::HttpGet3(const string& subUrl, const string& userAgent, const string& userName, const string& password, const string& host, const string& port, const string& bearerToken)
+{
+	string msg = "GET /" + subUrl + " HTTP/1.1\r\n";
+	msg += "Host: " + host + ":" + port + "\r\n";
+	msg += "Ntrip-Version: Ntrip/2.0\r\n";
+	msg += "User-Agent: " + userAgent + "\r\n";
+	msg += "Accept: */*\r\n";
+	msg += "Connection: close\r\n";
+
+	if (!bearerToken.empty()) {
+		// Use Bearer token authorization if provided
+		msg += "Authorization: Bearer " + bearerToken + "\r\n";
+	}
+	else if (!userName.empty() && !password.empty()) {
+		// Use Basic Authentication if Bearer token is not provided
+		string auth = userName + ":" + password;
+		msg += "Authorization: Basic " + base64Encode((const unsigned char*)auth.data(), (int)auth.size()) + "\r\n";
+	}
+
+	msg += "\r\n";
+
+	// Send the HTTP GET request
 	Write((uint8_t*)msg.data(), (int)msg.size());
 }
 

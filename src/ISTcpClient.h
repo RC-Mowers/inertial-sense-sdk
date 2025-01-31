@@ -82,6 +82,15 @@ public:
 	* @param password optional password (basic authentication)
 	*/
 	void HttpGet2(const std::string& subUrl, const std::string& userAgent, const std::string& userName, const std::string& password, const std::string& host, const std::string& port);
+	/**
+	* Send a GET http request to a url. You must then call Read to get the response. SSL is NOT supported.
+	* @param subUrl the url to request, i.e. index.html or pages/page1.txt, etc.
+	* @param userAgent the user agent to send
+	* @param userName optional user name (basic authentication)
+	* @param password optional password (basic authentication)
+	*/
+	void HttpGet3(const std::string& subUrl, const std::string& userAgent, const std::string& userName, const std::string& password, const std::string& host, const std::string& port, const std::string& bearerToken = "");
+
 
 	/**
 	* Get whether the connection is open

@@ -1288,8 +1288,8 @@ typedef struct PACKED
     double                  timeOfWeek;
 
     /** Packed 6x6 lower-diagonal covariance matrix (21 values, row-major) for EKF pose errors:
-     *  - Attitude error (body frame, rad²)
-     *  - Position error (ECEF frame, m²)
+     *  - Attitude (roll,pitch,yaw) error (body frame, rad²)
+     *  - Position (x,y,z) error (ECEF frame, m²)
      *  Index layout: 
      *    0 __ __ __ __ __
      *    1  2 __ __ __ __
@@ -1300,8 +1300,8 @@ typedef struct PACKED
     float					covPoseLD[21];
 
     /** Packed 6x6 lower-diagonal covariance matrix (21 values, row-major) for EKF twist errors:
-     *  - Velocity error (ECEF frame, (m/s)^2)
-     *  - Angular rate error (body frame, (rad/s)^2)
+     *  - Velocity (x,y,z) error (ECEF frame, (m/s)^2)
+     *  - Angular rate (p,q,r) error (body frame, (rad/s)^2)
      *  Index layout: 
      *   0 __ __ __ __ __
      *   1  2 __ __ __ __

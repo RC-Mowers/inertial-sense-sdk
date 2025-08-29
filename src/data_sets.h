@@ -1287,21 +1287,23 @@ typedef struct PACKED
     /** GPS time of week (since Sunday morning) in seconds */
     double                  timeOfWeek;
 
-    /** (rad^2, m^2)  Packed array containing covariance matrix (main diagonal and below) of EKF attitude error (in body frame) and position error (in ECEF frame) */
+    /** (rad^2, m^2)  Packed array containing 6x6 covariance matrix (main diagonal and below) of EKF attitude error (in body frame) and position error (in ECEF frame) */
     float					covPoseLD[21];
-    // 0 _ _ _ _ _
-    // 1 2 _ _ _ _
-    // 3 4 5 _ _ _
-    // 6 7 8 9 _ _
-    // ...
+    //  0 __ __ __ __ __
+    //  1  2 __ __ __ __
+    //  3  4  5 __ __ __
+    //  6  7  8  9 __ __
+    // 10 11 12 13 14 __
+    // 15 16 17 18 19 20
 
-    /** ((m/s)^2, (rad/s)^2)  Packed array containing covariance matrix (main diagonal and below) of EKF velocity error (in ECEF frame) and angular rate error (in body frame) */
+    /** ((m/s)^2, (rad/s)^2)  Packed array containing 6x6 covariance matrix (main diagonal and below) of EKF velocity error (in ECEF frame) and angular rate error (in body frame) */
     float					covTwistLD[21];
-    // 0 _ _ _ _ _
-    // 1 2 _ _ _ _
-    // 3 4 5 _ _ _
-    // 6 7 8 9 _ _
-    // ...
+    //  0 __ __ __ __ __
+    //  1  2 __ __ __ __
+    //  3  4  5 __ __ __
+    //  6  7  8  9 __ __
+    // 10 11 12 13 14 __
+    // 15 16 17 18 19 20
 } ros_covariance_pose_twist_t;
 
 // (DID_INL2_STATUS)

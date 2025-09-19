@@ -622,7 +622,7 @@ int processIsb(unsigned int pHandle, is_comm_instance_t *comm)
                     if (gdata->period != 0)
                         g_GpxRtkDebugReq |= 0x01 << pHandle;
                     else
-                       g_GpxRtkDebugReq |= 0x01 << (pHandle + 4); 
+                        g_GpxRtkDebugReq |= 0x01 << (pHandle + 4); 
                 }  
             }
         } 
